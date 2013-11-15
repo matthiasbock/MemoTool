@@ -9,7 +9,7 @@
 #  JSON
 #
 
-export = "Lymbo"
+export = "Text"
 
 from sys import argv, exit, stdout
 from datetime import datetime
@@ -55,7 +55,17 @@ def Memos(dbfile):
     results = dbcursor.execute('SELECT * FROM memo')
     return [Memo(row) for row in results]
 
-if export == 'JSON':
+#
+# export Memos as plain text
+#
+if export == 'Text':
+    for memo in Memos(dbfile):
+        stdout.write(strUnixTime(memo.create_t)+"\n"+memo.content.encode('utf-8')+"\n\n")
+
+#
+# export Memos as JSON dictionary
+#
+elif export == 'JSON':
     stdout.write('{\n')
     comma = False
     for memo in Memos(dbfile):
@@ -65,7 +75,10 @@ if export == 'JSON':
         stdout.write("\t'"+strUnixTime(memo.create_t)+"': '"+memo.content.replace('\n','\\n').encode('ascii', 'xmlcharrefreplace')+"'")
     stdout.write('\n}')
 
-elif export == 'Lymbo':
+#
+# export Memos as Lymbo-XML
+#
+elif export == 'Lymbo-XML':
     stdout.write("""<?xml version="1.0" encoding="UTF-8"?>\n
 <lymbo>
 <text>Notes from Samsung Memo App</text>
